@@ -6,7 +6,7 @@ Databases
 Network model
 
 The network database model is a flexible way to organize data in a database, allowing for complex relationships between entities by representing them as nodes in a graph structure with edges representing relationships. Unlike hierarchical models, this model allows entities to have multiple parents or owners, fostering a more dynamic and interconnected representation of data. 
-Key Features:
+
 Flexibility:
 The network model is designed to handle complex, many-to-many relationships between entities, unlike the hierarchical model's one-to-many restrictions. 
 Graph Structure:
@@ -80,7 +80,6 @@ Property Graphs
 
 A property graph database is a type of graph database that uses nodes, edges, and properties to represent data and relationships. Nodes represent entities, edges represent relationships between entities, and properties store additional information about nodes and edges. 
 
-Key Characteristics:
 Nodes: Represent individual entities or objects in the database. 
 Edges: Represent relationships or connections between nodes. 
 Properties: Store attributes or data associated with nodes and edges, using key-value pairs. 
@@ -114,5 +113,53 @@ Apache Jena: A widely used Java-based triplestore and framework.
 GraphDB: A commercial triplestore with enterprise features.
 RDFLib: A Python-based library for working with RDF data.
 Vistorso: An open-source triplestore engine with strong performance. 
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+RDF Data model
+
+The Resource Description Framework (RDF) is a graph data model used for representing information and its meaning on the web. It uses a simple, yet powerful, triples structure (subject-predicate-object) to describe relationships between resources, like documents, people, or abstract concepts. RDF facilitates data merging and schema evolution, making it suitable for various applications, including the Semantic Web. 
+
+Triple structure:
+Each RDF statement is a triple, consisting of a subject, a predicate (the relationship), and an object. 
+Resource identification:
+RDF uses Internationalized Resource Identifiers (IRIs) to uniquely identify resources, which can be URIs or other unique identifiers. 
+Graph representation:
+RDF data is represented as a graph, where nodes are resources and edges represent relationships (triples) between them. 
+Metadata representation:
+RDF is used to describe and exchange metadata, which is data about data, allowing for a standardized way to exchange data based on relationships. 
+Semantic Web foundation:
+RDF is a core technology for the Semantic Web, enabling machine-readable data with well-defined semantics. 
+Data interoperability:
+RDF promotes data interoperability by providing a standard way to represent and exchange data, even from different sources or applications. 
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+SPARQL Query
+
+
+A SPARQL query is used to retrieve, insert, delete, and generally manipulate data stored in RDF (Resource Description Framework) format, 
+which is a standard for representing data in a way that can be understood by machines. 
+It's like SQL for relational databases, but for the graph-based world of linked data. 
+SPARQL queries are built using triple patterns (subject-predicate-object), which are fundamental to RDF. 
+
+
+Querying RDF Data:
+SPARQL is specifically designed to query data stored in the RDF format, which is commonly used in semantic web technologies. 
+Graph-Based:
+SPARQL works with RDF graphs, where data is represented as nodes (resources) and edges (relationships). 
+Triple Patterns:
+Queries are constructed using triple patterns, which match subject-predicate-object relationships within the graph. 
+Diverse Data Sources:
+SPARQL can be used to query data from various sources, whether it's stored natively in RDF or can be mapped to RDF using middleware. 
+SELECT, CONSTRUCT, ASK, DESCRIBE:
+SPARQL supports different types of queries, including SELECT (returning data as a table), CONSTRUCT (creating a new RDF graph),
+ASK (checking for the existence of a pattern), and DESCRIBE (returning data about a resource). 
+INSERT, DELETE:
+SPARQL also provides commands for adding and removing data from RDF graphs. 
+W3C Standard:
+SPARQL is a standardized query language developed by the W3C RDF Data Access Working Group. 
+
 
 -------------------------------------------------------------------------------------------------------------------------------
