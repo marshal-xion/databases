@@ -1,0 +1,78 @@
+ //Redis cache implementation in JS. 
+// for education only
+
+
+class RedisDatabase {
+    constructor() {
+        // First array - main database with A to Z
+        this.database = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 
+                        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 
+                        'U', 'V', 'W', 'X', 'Y', 'Z'];
+        // Second array - Redis cache (empty initially)
+        this.redisCache = [];
+        // Stats to track cache hits and misses
+        this.cacheHits = 0;
+        this.cacheMisses = 0;
+    }
+
+    // Method to search for data
+    findData(query) {
+        // Step 1: Check Redis cache first
+        const cacheResult = this.redisCache.find(item => item === query);
+        
+        if (cacheResult) {
+            // Cache hit
+            this.cacheHits++;
+            console.log(`Cache HIT! Found ${query} in Redis cache`);
+            return {
+                data: cacheResult,
+                source: 'Redis Cache',
+                hits: this.cacheHits,
+                misses: this.cacheMisses
+            };
+        }
+
+        // Step 2: Cache miss, check main database
+        this.cacheMisses++;
+        console.log(`Cache MISS for ${query}, checking main database`);
+        
+        const dbResult = this.database.find(item => item === query);
+        
+        if (dbResult) {
+            // Found in database, add to Redis cache
+            this.redisCache.push(dbResult);
+            console.log(`Found ${query} in database, added to cache`);
+            return {
+                data: dbResult,
+                source: 'Main Database',
+                hits: this.cacheHits,
+                misses: this.cacheMisses
+            };
+        }
+
+        // Step 3: Not found in either
+        console.log(`Data ${query} not found`);
+        return {
+            data: null,
+            source: 'Not Found',
+            hits: this.cacheHits,
+            misses: this.cacheMisses
+        };
+    }
+
+    // Method to display current cache contents
+    displayCache() {
+        console.log('Current Redis Cache:', this.redisCache);
+    }
+}
+
+// Example usage
+const redisDB = new RedisDatabase();
+
+// Test cases
+console.log(redisDB.findData('C'));    // Cache miss, found in DB
+console.log(redisDB.findData('C'));    // Cache hit
+console.log(redisDB.findData('Z'));    // Cache miss, found in DB
+console.log(redisDB.findData('Z'));    // Cache hit
+console.log(redisDB.findData('1'));    // Not found
+redisDB.displayCache();                // Show cache contents
