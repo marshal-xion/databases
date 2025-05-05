@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HashMap Visualization</title>
+    <style>
+        canvas { border: 1px solid black; }
+        body { font-family: Arial, sans-serif; }
+        #controls { margin: 10px 0; }
+        #error { color: red; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <input type="text" id="key" placeholder="Key ">
+        <input type="text" id="value" placeholder="Value">
+        <button onclick="addEntry()">Set</button>
+        <button onclick="deleteEntry()">Delete</button>
+        <button onclick="clearMap()">Clear</button>
+    </div>
+    <div id="error"></div>
+    <canvas id="hashmapCanvas" width="1200" height="800"></canvas>
+    <script>
+        class HashMap {
+            constructor(size = 16) {
+                this.buckets = new Array(size).fill(null).map(() => []);
+                this.size = size;
+                this.count = 0;
+            }
+
+            hash(key) {
+                let hash = 0;
+                const stringKey = String(key);
+                for (let i = 0; i < stringKey.length; i++) {
+                    hash = (hash + stringKey.charCodeAt(i) * 31) % this.size;
+                }
+                return hash;
+            }
+
+            set(key, value) {
+                const index = this.hash(key); // Fixed: Corrected key64 to key
+                const bucket = this.buckets[index];
+                for (let i = 0; i < bucket.length; i++) {
+                    if (bucket[i].key === key) {
+                        bucket[i].value = value;
+                        return;
+                    }
+                }
+                bucket.push({ key, value });
+                this.count++;
+                if (this.count / this.size > 0.75) {
+                    this.resize();
+                }
+            }
+
+            get(key) {
+                const index = this.hash(key);
+                const bucket = this.buckets[index];
+                for (let i = 0; i < bucket.length; i++) {
+                    if (bucket[i].key === key) {
+                        return bucket[i].value;
+                    }
+                }
+                return undefined;
+            }
+
+            delete(key) {
+                const index = this.hash(key);
+                const bucket = this.buckets[index];
+                for (let i = 0; i < bucket.length; i++) {
+                    if (bucket[i].key === key) {
+                        bucket.splice(i, 1);
+                        this.count--;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            resize() {
+                const oldBuckets = this.buckets;
+                this.size *= 2;
+                this.buckets = new Array(this.size).fill(null).map(() => []);
+                this.count = 0;
+                for (const bucket of oldBuckets) {
+                    for (const { key, value } of bucket) {
+                        this.set(key, value);
+                    }
+                }
+            }
+
+            has(key) {
+                return this.get(key) !== undefined;
+            }
+
+            getSize() {
+                return this.count;
+            }
+
+            toVisualizationData() {
+                return this.buckets.map((bucket, index) => ({
+                    index,
+                    entries: bucket.map(({ key, value }) => ({ key, value }))
+                }));
+            }
+        }
+
+        const hashMap = new HashMap();
+        const canvas = document.getElementById('hashmapCanvas');
+        const ctx = canvas.getContext('2d');
+        const errorDiv = document.getElementById('error');
+
+        function drawHashMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const data = hashMap.toVisualizationData();
+            const bucketHeight = 40;
+            const maxBuckets = Math.min(data.length, Math.floor(canvas.height / bucketHeight));
+            const startY = 20;
+
+            ctx.font = '14px Arial';
+            ctx.fillStyle = 'black';
+
+            // Draw header
+            ctx.fillText('Bucket', 10, startY - 10);
+            ctx.fillText('Key-Value Pairs', 100, startY - 10);
+
+            // Draw buckets
+            data.forEach((bucket, i) => {
+                if (i >= maxBuckets) return;
+                const y = startY + i * bucketHeight;
+
+                // Draw bucket index
+                ctx.fillText(`#${bucket.index}`, 10, y);
+
+                // Draw entries
+                let x = 100;
+                bucket.entries.forEach(entry => {
+                    const text = `${entry.key}: ${entry.value}`;
+                    ctx.fillText(text, x, y);
+                    x += ctx.measureText(text).width + 20;
+                });
+
+                // Draw bucket border
+                ctx.strokeStyle = 'gray';
+                ctx.strokeRect(5, y - 15, canvas.width - 10, bucketHeight - 5);
+            });
+
+            // Draw load factor
+            ctx.fillText(`Load Factor: ${(hashMap.count / hashMap.size).toFixed(2)}`, 10, canvas.height - 10);
+        }
+
+        function addEntry() {
+            const key = document.getElementById('key').value.trim();
+            const value = document.getElementById('value').value.trim();
+            if (!key || !value) {
+                errorDiv.textContent = 'Please enter both key and value.';
+                return;
+            }
+            hashMap.set(key, value);
+            drawHashMap();
+            document.getElementById('key').value = '';
+            document.getElementById('value').value = '';
+            errorDiv.textContent = '';
+        }
+
+        function deleteEntry() {
+            const key = document.getElementById('key').value.trim();
+            if (!key) {
+                errorDiv.textContent = 'Please enter a key to delete.';
+                return;
+            }
+            if (!hashMap.delete(key)) {
+                errorDiv.textContent = `Key "${key}" not found.`;
+            } else {
+                errorDiv.textContent = '';
+            }
+            drawHashMap();
+            document.getElementById('key').value = '';
+        }
+
+        function clearMap() {
+            hashMap.buckets = new Array(hashMap.size).fill(null).map(() => []);
+            hashMap.count = 0;
+            drawHashMap();
+            errorDiv.textContent = '';
+        }
+
+        // Initial draw
+        drawHashMap();
+    </script>
+</body>
+</html>
